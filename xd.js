@@ -1,5 +1,40 @@
 let player1Pokemon = null;
 let player2Pokemon = null;
+let gameMode = "pvp";
+
+function selectMode(mode) {
+  gameMode = mode;
+  document
+    .querySelectorAll(".mode-button")
+    .forEach((btn) => btn.classList.remove("active"));
+  document
+    .querySelector(`[onclick="selectMode('${mode}')"]`)
+    .classList.add("active");
+
+  // Reset the game state
+  player1Pokemon = null;
+  player2Pokemon = null;
+  document.getElementById("player1Pokemon").innerHTML = "";
+  document.getElementById("player2Pokemon").innerHTML = "";
+  document.getElementById("battleResult").innerHTML = "";
+  document.getElementById("startBattle").disabled = true;
+
+  // Handle CPU mode
+  const player2Section = document.querySelector(".player-section:nth-child(3)");
+  const player2Input = document.getElementById("player2Input");
+  const player2Buttons = player2Input.parentElement.querySelectorAll("button");
+
+  if (mode === "cpu") {
+    player2Section.style.opacity = "0.7";
+    player2Input.disabled = true;
+    player2Buttons.forEach((btn) => (btn.disabled = true));
+    randomPokemon(2);
+  } else {
+    player2Section.style.opacity = "1";
+    player2Input.disabled = false;
+    player2Buttons.forEach((btn) => (btn.disabled = false));
+  }
+}
 
 async function obtenerPokemon(input) {
   try {
@@ -20,16 +55,25 @@ async function obtenerPokemon(input) {
 }
 
 function showTab(tabName) {
-  document.querySelectorAll('.tab-content').forEach(tab => tab.classList.remove('active'));
-  document.querySelectorAll('.tab-button').forEach(btn => btn.classList.remove('active'));
-  document.getElementById(tabName + 'Tab').classList.add('active');
-  document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
+  document
+    .querySelectorAll(".tab-content")
+    .forEach((tab) => tab.classList.remove("active"));
+  document
+    .querySelectorAll(".tab-button")
+    .forEach((btn) => btn.classList.remove("active"));
+  document.getElementById(tabName + "Tab").classList.add("active");
+  document
+    .querySelector(`[onclick="showTab('${tabName}')"]`)
+    .classList.add("active");
 }
 
 async function getRandomPokemonId() {
   const MIN_POKEMON_ID = 1;
   const MAX_POKEMON_ID = 1025;
-  return Math.floor(Math.random() * (MAX_POKEMON_ID - MIN_POKEMON_ID + 1)) + MIN_POKEMON_ID;
+  return (
+    Math.floor(Math.random() * (MAX_POKEMON_ID - MIN_POKEMON_ID + 1)) +
+    MIN_POKEMON_ID
+  );
 }
 
 async function randomPokemon(player) {
@@ -53,7 +97,7 @@ async function randomPokemon(player) {
 
       if (retries > 0) {
         container.innerHTML = `<div class="loading">Reintentando obtener Pokémon... (${retries} intentos restantes)</div>`;
-        await new Promise(resolve => setTimeout(resolve, 1000));
+        await new Promise((resolve) => setTimeout(resolve, 1000));
       }
     }
   }
@@ -81,17 +125,22 @@ async function selectPokemon(player) {
   }
 }
 
+
 function updatePlayerPokemon(player, pokemon) {
   const container = document.getElementById(`player${player}Pokemon`);
   const stats = calculateTotalStats(pokemon);
-  
+
   if (player === 1) player1Pokemon = { pokemon, stats };
   else player2Pokemon = { pokemon, stats };
 
   container.innerHTML = `
     <div class="pokemon-card">
       <h2>${pokemon.name.toUpperCase()}</h2>
-      <img src="${pokemon.sprites.front_default}" alt="${pokemon.name}" class="pokemon-image">
+      <div class="pokemon-image-container">
+        <img src="${pokemon.sprites.front_default}" alt="${
+    pokemon.name
+  }" class="pokemon-image">
+      </div>
       <div class="pokemon-details">
         <p><strong>HP:</strong> ${pokemon.stats[0].base_stat}</p>
         <p><strong>Ataque:</strong> ${pokemon.stats[1].base_stat}</p>
@@ -105,19 +154,21 @@ function updatePlayerPokemon(player, pokemon) {
 }
 
 function calculateTotalStats(pokemon) {
-  return pokemon.stats.slice(0, 3).reduce((total, stat) => total + stat.base_stat, 0);
+  return pokemon.stats
+    .slice(0, 3)
+    .reduce((total, stat) => total + stat.base_stat, 0);
 }
 
 function checkBattleReady() {
-  const startButton = document.getElementById('startBattle');
+  const startButton = document.getElementById("startBattle");
   startButton.disabled = !(player1Pokemon && player2Pokemon);
 }
 
 function startBattle() {
-  const result = document.getElementById('battleResult');
+  const result = document.getElementById("battleResult");
   const player1Total = player1Pokemon.stats;
   const player2Total = player2Pokemon.stats;
-  
+
   let winner, loser;
   if (player1Total > player2Total) {
     winner = player1Pokemon;
@@ -127,15 +178,20 @@ function startBattle() {
     loser = player1Pokemon;
   }
 
-  const winnerCard = winner ? 
-    document.querySelector(`#player${winner === player1Pokemon ? '1' : '2'}Pokemon .pokemon-card`) : null;
-  
-  if (winnerCard) winnerCard.classList.add('winner-animation');
+  const winnerCard = winner
+    ? document.querySelector(
+        `#player${winner === player1Pokemon ? "1" : "2"}Pokemon .pokemon-card`
+      )
+    : null;
 
-  result.innerHTML = winner ? `
+  if (winnerCard) winnerCard.classList.add("winner-animation");
+
+  result.innerHTML = winner
+    ? `
     <h2>${winner.pokemon.name.toUpperCase()} es el ganador!</h2>
     <p>Puntuación total: ${winner.stats} vs ${loser.stats}</p>
-  ` : `
+  `
+    : `
     <h2>¡Es un empate!</h2>
     <p>Ambos Pokémon tienen ${player1Total} puntos</p>
   `;
@@ -159,10 +215,10 @@ async function buscarPokemon() {
   }
 
   const sprites = {
-    'Normal': pokemon.sprites.front_default,
-    'Shiny': pokemon.sprites.front_shiny,
-    'Back Normal': pokemon.sprites.back_default,
-    'Back Shiny': pokemon.sprites.back_shiny
+    Normal: pokemon.sprites.front_default,
+    Shiny: pokemon.sprites.front_shiny,
+    "Back Normal": pokemon.sprites.back_default,
+    "Back Shiny": pokemon.sprites.back_shiny,
   };
 
   const nombre = pokemon.name.toUpperCase();
@@ -178,20 +234,25 @@ async function buscarPokemon() {
 
   const spriteButtons = Object.entries(sprites)
     .filter(([_, url]) => url !== null)
-    .map(([type, url]) => `
+    .map(
+      ([type, url]) => `
       <button class="sprite-button" data-sprite="${url}">
         ${type}
       </button>
-    `).join("");
+    `
+    )
+    .join("");
 
   pokemonInfo.innerHTML = `
     <div class="pokemon-card">
       <h2>${nombre}</h2>
       <div class="sprite-container">
-        <img src="${sprites['Normal'] || 'https://via.placeholder.com/150'}" 
-             alt="${nombre}" 
-             class="pokemon-image" 
-             id="currentSprite">
+        <div class="pokemon-image-container">
+          <img src="${sprites["Normal"] || "https://via.placeholder.com/150"}" 
+               alt="${nombre}" 
+               class="pokemon-image" 
+               id="currentSprite">
+        </div>
         <div class="sprite-buttons">
           ${spriteButtons}
         </div>
@@ -209,14 +270,14 @@ async function buscarPokemon() {
     </div>
   `;
 
-  document.querySelectorAll('.sprite-button').forEach(button => {
-    button.addEventListener('click', () => {
+  document.querySelectorAll(".sprite-button").forEach((button) => {
+    button.addEventListener("click", () => {
       const spriteUrl = button.dataset.sprite;
-      const currentSprite = document.getElementById('currentSprite');
-      currentSprite.style.opacity = '0';
+      const currentSprite = document.getElementById("currentSprite");
+      currentSprite.style.opacity = "0";
       setTimeout(() => {
         currentSprite.src = spriteUrl;
-        currentSprite.style.opacity = '1';
+        currentSprite.style.opacity = "1";
       }, 300);
     });
   });
