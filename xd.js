@@ -1,10 +1,12 @@
 let player1Pokemon = null;
 let player2Pokemon = null;
 
-async function obtenerPokemon(nombre) {
+async function obtenerPokemon(input) {
   try {
+    // Convertir el input a minúsculas para la búsqueda por nombre
+    const searchTerm = input.toString().toLowerCase();
     const respuesta = await fetch(
-      `https://pokeapi.co/api/v2/pokemon/${nombre}`
+      `https://pokeapi.co/api/v2/pokemon/${searchTerm}`
     );
     if (!respuesta.ok) {
       throw new Error("Pokémon no encontrado");
@@ -25,7 +27,9 @@ function showTab(tabName) {
 }
 
 async function getRandomPokemonId() {
-  return Math.floor(Math.random() * 1025) + 1; // Asegurar números del 1 al 1025
+  const MIN_POKEMON_ID = 1;
+  const MAX_POKEMON_ID = 1025;
+  return Math.floor(Math.random() * (MAX_POKEMON_ID - MIN_POKEMON_ID + 1)) + MIN_POKEMON_ID;
 }
 
 async function randomPokemon(player) {
