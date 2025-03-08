@@ -4,190 +4,70 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Buscar Pokémon</title>
-    <style>
-      :root {
-        --primary-color: #4a90e2;
-        --secondary-color: #ffcc00;
-        --background-color: #ffffff;
-        --text-color: #333333;
-        --border-radius: 12px;
-      }
-      * {
-        box-sizing: border-box;
-        margin: 0;
-        padding: 0;
-      }
-      body {
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
-          sans-serif;
-        text-align: center;
-        background-color: var(--background-color);
-        color: var(--text-color);
-        line-height: 1.6;
-        padding: 16px;
-      }
-      h1 {
-        font-size: clamp(1.5rem, 5vw, 2.5rem);
-        margin: 1rem 0;
-        font-weight: 700;
-      }
-      .container {
-        width: 100%;
-        max-width: 600px;
-        margin: 0 auto;
-        padding: 1rem;
-      }
-      .pokemon-container {
-        background: var(--background-color);
-        padding: 1.5rem;
-        border-radius: var(--border-radius);
-        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-        margin-top: 1.5rem;
-        width: 100%;
-      }
-      .pokemon-image {
-        width: min(150px, 40vw);
-        height: auto;
-        transition: opacity 0.3s ease;
-      }
-      .sprite-container {
-        margin: 1.5rem 0;
-      }
-      .sprite-buttons {
-        display: flex;
-        justify-content: center;
-        gap: 0.5rem;
-        flex-wrap: wrap;
-        margin-top: 1rem;
-      }
-      .sprite-button {
-        padding: 0.5rem 1rem;
-        font-size: 0.9rem;
-        background-color: var(--primary-color);
-        color: white;
-        border: none;
-        border-radius: 20px;
-        cursor: pointer;
-        transition: transform 0.2s ease;
-      }
-      .sprite-button:hover {
-        transform: translateY(-2px);
-      }
-      input {
-        width: 100%;
-        max-width: 300px;
-        padding: 0.75rem;
-        font-size: 1rem;
-        border: 2px solid #eee;
-        border-radius: var(--border-radius);
-        margin-bottom: 1rem;
-      }
-      button {
-        padding: 0.75rem 1.5rem;
-        font-size: 1rem;
-        background-color: var(--secondary-color);
-        color: var(--text-color);
-        border: none;
-        border-radius: var(--border-radius);
-        cursor: pointer;
-        transition: transform 0.2s ease;
-      }
-      button:hover {
-        transform: translateY(-2px);
-      }
-      .loading {
-        padding: 1rem;
-        color: #666;
-      }
-      .error {
-        color: #ff4444;
-        padding: 1rem;
-      }
-      .pokemon-card {
-        animation: fadeIn 0.5s ease;
-      }
-      .stats-list {
-        list-style: none;
-        padding: 0;
-        display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-        gap: 0.5rem;
-      }
-      .stats-list li {
-        padding: 0.5rem;
-        background-color: #f8f8f8;
-        border-radius: var(--border-radius);
-        font-size: 0.9rem;
-      }
-      .pokemon-details {
-        text-align: left;
-        padding: 1rem 0;
-      }
-      .pokemon-details p {
-        margin: 0.5rem 0;
-        font-size: 0.95rem;
-      }
-      @keyframes fadeIn {
-        from {
-          opacity: 0;
-          transform: translateY(10px);
-        }
-        to {
-          opacity: 1;
-          transform: translateY(0);
-        }
-      }
-      @media (max-width: 480px) {
-        body {
-          padding: 8px;
-        }
-        .container {
-          padding: 0.5rem;
-        }
-        .pokemon-container {
-          padding: 1rem;
-        }
-        .sprite-buttons {
-          gap: 0.25rem;
-        }
-        .sprite-button {
-          padding: 0.4rem 0.8rem;
-          font-size: 0.8rem;
-        }
-        .stats-list {
-          grid-template-columns: 1fr;
-        }
-      }
-    </style>
+    <link rel="stylesheet" href="styles.css" />
   </head>
   <body>
     <div class="container">
       <h1>Busca tu Pokémon</h1>
-      <div>
-        <input type="text" id="pokemonInput" placeholder="Nombre o número" />
-        <button onclick="buscarPokemon()">Buscar</button>
+      <div class="tabs">
+        <button class="tab-button active" onclick="showTab('search')">
+          Búsqueda
+        </button>
+        <button class="tab-button" onclick="showTab('battle')">
+          Batalla 1vs1
+        </button>
       </div>
-      <div id="pokemonInfo" class="pokemon-container"></div>
+      <div id="searchTab" class="tab-content active">
+        <div>
+          <input type="text" id="pokemonInput" placeholder="Nombre o número" />
+          <button onclick="buscarPokemon()">Buscar</button>
+        </div>
+        <div id="pokemonInfo" class="pokemon-container"></div>
+      </div>
+      <div id="battleTab" class="tab-content">
+        <div class="battle-container">
+          <div class="player-setup">
+            <div class="player-section">
+              <h3>Jugador 1</h3>
+              <div class="pokemon-select">
+                <input
+                  type="text"
+                  id="player1Input"
+                  placeholder="Nombre o número"
+                />
+                <button onclick="selectPokemon(1)">Seleccionar</button>
+                <button onclick="randomPokemon(1)">Aleatorio</button>
+              </div>
+              <div id="player1Pokemon" class="player-pokemon"></div>
+            </div>
+            <div class="vs-section">
+              <h2>VS</h2>
+              <button id="startBattle" onclick="startBattle()" disabled>
+                ¡Comenzar Batalla!
+              </button>
+            </div>
+            <div class="player-section">
+              <h3>Jugador 2</h3>
+              <div class="pokemon-select">
+                <input
+                  type="text"
+                  id="player2Input"
+                  placeholder="Nombre o número"
+                />
+                <button onclick="selectPokemon(2)">Seleccionar</button>
+                <button onclick="randomPokemon(2)">Aleatorio</button>
+              </div>
+              <div id="player2Pokemon" class="player-pokemon"></div>
+            </div>
+          </div>
+          <div id="battleResult" class="battle-result"></div>
+        </div>
+      </div>
     </div>
-    <footer
-      style="
-        margin-top: 2rem;
-        padding: 1rem;
-        text-align: center;
-        border-top: 1px solid #eee;
-      "
-    >
-      <p style="font-size: 0.9rem; color: var(--text-color)">
+    <footer>
+      <p>
         Created by
-        <a
-          href="https://zzzangelo-y.vercel.app/"
-          style="
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: bold;
-          "
-          >Angelo Dev</a
-        >
+        <a href="https://zzzangelo-y.vercel.app/">Angelo Dev</a>
       </p>
     </footer>
     <script src="xd.js"></script>
